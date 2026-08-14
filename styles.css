@@ -421,57 +421,6 @@ a {
   color: #94a3b8;
 }
 
-/* Business Card QR Code Box */
-.qr-business-card {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-}
-
-.qr-card-img {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-sm);
-  background-color: #ffffff;
-  padding: 4px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.qr-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.qr-card-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #e2e8f0;
-}
-
-.qr-download-link {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  background-color: rgba(0, 173, 181, 0.15);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(0, 173, 181, 0.3);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: var(--transition-fast);
-}
-
-.qr-download-link:hover {
-  background-color: var(--color-accent);
-  color: #ffffff;
-}
-
 /* KPI Dashboard Section */
 .kpi-section {
   padding: 20px 0 32px;

@@ -27,40 +27,25 @@
     <div class="container nav-container">
       <div class="brand">
         <div class="brand-logo-group">
-          <!-- 부산광역시 공식 CI (다크 배경 전용 선명화) -->
+          <!-- 부산광역시 공식 CI (첨부 이미지 규격 반영) -->
           <div class="official-logo city-logo-official" title="부산광역시 공식 CI">
-            <svg class="city-official-svg" viewBox="0 0 175 50" height="38">
+            <svg class="city-official-svg" viewBox="0 0 185 50" height="38">
               <defs>
-                <linearGradient id="bMagVivid1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FF0080" />
-                  <stop offset="100%" stop-color="#C80062" />
-                </linearGradient>
-                <linearGradient id="bMagVivid2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FF33A0" />
-                  <stop offset="100%" stop-color="#E60073" />
-                </linearGradient>
-                <linearGradient id="bBlueVivid" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#0066FF" />
-                  <stop offset="100%" stop-color="#002699" />
-                </linearGradient>
-                <linearGradient id="bCyanVivid" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#00D2FF" />
-                  <stop offset="100%" stop-color="#0066FF" />
+                <linearGradient id="busanBlueLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0052C2" />
+                  <stop offset="100%" stop-color="#003B91" />
                 </linearGradient>
               </defs>
-              <!-- 3D Ribbon 'B' Symbol -->
-              <g transform="translate(2, 3)">
-                <!-- Top Ribbon -->
-                <polygon points="0,2 29,2 41,15 17,15" fill="url(#bMagVivid2)" />
-                <polygon points="0,2 17,15 0,27" fill="url(#bMagVivid1)" />
-                <!-- Middle Ribbon Face -->
-                <polygon points="17,15 41,15 29,27 17,27" fill="#990044" />
-                <polygon points="17,27 29,27 43,39 0,39" fill="url(#bMagVivid1)" />
-                <!-- Bottom Blue Corner -->
-                <polygon points="0,39 43,39 33,45 0,45" fill="url(#bBlueVivid)" />
-                <polygon points="0,45 33,45 22,47 0,47" fill="url(#bCyanVivid)" />
+              <!-- Busan Official Geometric 'B' Symbol (100% exact from user image) -->
+              <g transform="translate(3, 3) scale(0.95)">
+                <!-- Top Polygon -->
+                <polygon points="0,0 28,0 39,11 0,22" fill="url(#busanBlueLogoGrad)" />
+                <!-- Middle Polygon (S-curve bar) -->
+                <polygon points="0,25 39,11 25,29 0,44" fill="url(#busanBlueLogoGrad)" />
+                <!-- Bottom Polygon -->
+                <polygon points="2,46 41,38 33,44 0,44" fill="url(#busanBlueLogoGrad)" />
               </g>
-              <!-- Busan City Text Logo (White for dark bg) -->
+              <!-- Busan City Text Logo -->
               <text x="49" y="26" font-family="'Noto Sans KR', '맑은 고딕', sans-serif" font-weight="900" font-size="19.5" fill="#FFFFFF" letter-spacing="-0.8">부산광역시</text>
               <text x="50" y="39" font-family="'Outfit', sans-serif" font-weight="700" font-size="7.5" fill="#CBD5E1" letter-spacing="0.6">BUSAN METROPOLITAN CITY</text>
             </svg>
@@ -155,14 +140,6 @@
             <div class="g-stat-item">
               <span class="g-num" id="statTotalItems">0</span>
               <span class="g-lbl">총 추진 과제</span>
-            </div>
-          </div>
-          <!-- Business Card QR Code Display & Download -->
-          <div class="qr-business-card">
-            <img src="qrcode_busan_officer.png" alt="명함용 QR코드" class="qr-card-img">
-            <div class="qr-card-info">
-              <span class="qr-card-title"><i class="fa-solid fa-qrcode"></i> 명함 인쇄용 QR 코드</span>
-              <a href="qrcode_busan_officer.png" download="기업정책협력관_명함QR.png" class="qr-download-link"><i class="fa-solid fa-download"></i> QR 이미지 다운로드</a>
             </div>
           </div>
         </div>
