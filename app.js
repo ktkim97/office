@@ -716,9 +716,9 @@ class PolicyTrackerApp {
 
     // Status Label Map
     const statusMap = {
-      DONE: { name: "✅ 완료 (성과)", class: "done" },
-      IN_PROGRESS: { name: "🔄 하고 있는 일", class: "progress" },
-      PLANNED: { name: "📅 할 계획인 일", class: "planned" }
+      DONE: { name: "✅ 완료", class: "done" },
+      IN_PROGRESS: { name: "🔄 진행", class: "progress" },
+      PLANNED: { name: "📅 계획", class: "planned" }
     };
 
     const roleInfo = roleMap[task.role] || { name: task.role, class: "trouble" };

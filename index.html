@@ -227,13 +227,13 @@
             <i class="fa-solid fa-list-check"></i> 전체 과제 (<span id="cntAll">0</span>)
           </button>
           <button class="tab-btn" data-status="DONE">
-            <i class="fa-solid fa-circle-check"></i> 완료된 일 (<span id="cntDone">0</span>)
+            <i class="fa-solid fa-circle-check"></i> 완료 (<span id="cntDone">0</span>)
           </button>
           <button class="tab-btn" data-status="IN_PROGRESS">
-            <i class="fa-solid fa-spinner fa-spin-pulse"></i> 하고 있는 일 (<span id="cntProgress">0</span>)
+            <i class="fa-solid fa-arrows-rotate"></i> 진행 (<span id="cntProgress">0</span>)
           </button>
           <button class="tab-btn" data-status="PLANNED">
-            <i class="fa-regular fa-calendar-check"></i> 할 계획인 일 (<span id="cntPlanned">0</span>)
+            <i class="fa-regular fa-calendar-check"></i> 계획 (<span id="cntPlanned">0</span>)
           </button>
         </div>
 
@@ -366,9 +366,9 @@
           <div class="form-group half">
             <label for="formStatus" class="required">진행 상태</label>
             <select id="formStatus" class="form-control" required>
-              <option value="DONE">✅ 완료된 일 (성과)</option>
-              <option value="IN_PROGRESS">🔄 하고 있는 일 (진행중)</option>
-              <option value="PLANNED">📅 할 계획인 일 (추진예정)</option>
+              <option value="DONE">✅ 완료</option>
+              <option value="IN_PROGRESS">🔄 진행</option>
+              <option value="PLANNED">📅 계획</option>
             </select>
           </div>
         </div>
