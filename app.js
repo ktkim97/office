@@ -848,9 +848,61 @@ class PolicyTrackerApp {
 
     this.openModal(this.detailModal);
   }
+
+  // Register Mobile App Bottom Bar Events
+  bindMobileBarEvents() {
+    const mTabHome = document.getElementById("mTabHome");
+    const mTabRegister = document.getElementById("mTabRegister");
+    const mTabSuggest = document.getElementById("mTabSuggest");
+    const mTabSettings = document.getElementById("mTabSettings");
+
+    if (mTabHome) {
+      mTabHome.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        this.setActiveMobileTab(mTabHome);
+      });
+    }
+    if (mTabRegister) {
+      mTabRegister.addEventListener("click", () => {
+        this.requireAuth(() => this.openTaskFormModal());
+        this.setActiveMobileTab(mTabRegister);
+      });
+    }
+    if (mTabSuggest) {
+      mTabSuggest.addEventListener("click", () => {
+        this.openModal(this.suggestModal);
+        this.setActiveMobileTab(mTabSuggest);
+      });
+    }
+    if (mTabSettings) {
+      mTabSettings.addEventListener("click", () => {
+        if (this.isAuthenticated) {
+          this.openModal(this.changePwModal);
+        } else {
+          this.requireAuth(() => this.openModal(this.changePwModal));
+        }
+        this.setActiveMobileTab(mTabSettings);
+      });
+    }
+  }
+
+  setActiveMobileTab(activeBtn) {
+    document.querySelectorAll(".m-tab-item").forEach(b => b.classList.remove("active"));
+    activeBtn.classList.add("active");
+  }
 }
 
-// DOM Content Loaded Handler
+// DOM Content Loaded & PWA Service Worker Registration
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new PolicyTrackerApp();
+  if (window.app.bindMobileBarEvents) {
+    window.app.bindMobileBarEvents();
+  }
+
+  // PWA Service Worker Register
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('PWA Service Worker registered successfully:', reg.scope))
+      .catch((err) => console.log('Service Worker registration failed:', err));
+  }
 });

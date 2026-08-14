@@ -1213,4 +1213,54 @@ a {
   .detail-grid {
     grid-template-columns: 1fr;
   }
+
+  body {
+    padding-bottom: 64px; /* Space for mobile bottom bar */
+  }
+
+  .mobile-app-bottom-bar {
+    display: flex;
+  }
+}
+
+/* Mobile App Bottom Bar Styles */
+.mobile-app-bottom-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background-color: var(--color-primary);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 999;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.m-tab-item {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 25%;
+  height: 100%;
+  transition: var(--transition-fast);
+}
+
+.m-tab-item i {
+  font-size: 1.25rem;
+}
+
+.m-tab-item:hover, .m-tab-item.active {
+  color: var(--color-accent);
 }

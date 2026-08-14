@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>부산광역시 ✕ 부산상공회의소 기업정책협력관 업무 트래커</title>
   <meta name="description" content="부산시에서 부산상공회의소로 파견된 기업정책협력관의 기업애로 해결, 제도개선, 정책발굴 및 민관협력 업무 현황 대시보드">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b192c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="기업정책협력관">
+
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -530,6 +538,26 @@
       </form>
     </div>
   </div>
+
+  <!-- Mobile App Sticky Bottom Navigation Bar (Visible on Mobile/Tablet) -->
+  <nav class="mobile-app-bottom-bar" id="mobileAppBottomBar">
+    <button class="m-tab-item active" id="mTabHome">
+      <i class="fa-solid fa-house"></i>
+      <span>홈</span>
+    </button>
+    <button class="m-tab-item" id="mTabRegister">
+      <i class="fa-solid fa-square-plus"></i>
+      <span>실적등록</span>
+    </button>
+    <button class="m-tab-item" id="mTabSuggest">
+      <i class="fa-solid fa-paper-plane"></i>
+      <span>애로건의</span>
+    </button>
+    <button class="m-tab-item" id="mTabSettings">
+      <i class="fa-solid fa-user-lock"></i>
+      <span>관리자설정</span>
+    </button>
+  </nav>
 
   <!-- Toast Notification -->
   <div class="toast" id="toastContainer">
