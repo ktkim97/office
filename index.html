@@ -27,27 +27,22 @@
     <div class="container nav-container">
       <div class="brand">
         <div class="brand-logo-group">
-          <!-- 부산광역시 공식 CI (첨부 이미지 규격 반영) -->
+          <!-- 부산광역시 공식 CI (첨부 라인아트 B 심볼 반영) -->
           <div class="official-logo city-logo-official" title="부산광역시 공식 CI">
-            <svg class="city-official-svg" viewBox="0 0 185 50" height="38">
-              <defs>
-                <linearGradient id="busanBlueLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#0052C2" />
-                  <stop offset="100%" stop-color="#003B91" />
-                </linearGradient>
-              </defs>
-              <!-- Busan Official Geometric 'B' Symbol (100% exact from user image) -->
-              <g transform="translate(3, 3) scale(0.95)">
-                <!-- Top Polygon -->
-                <polygon points="0,0 28,0 39,11 0,22" fill="url(#busanBlueLogoGrad)" />
-                <!-- Middle Polygon (S-curve bar) -->
-                <polygon points="0,25 39,11 25,29 0,44" fill="url(#busanBlueLogoGrad)" />
-                <!-- Bottom Polygon -->
-                <polygon points="2,46 41,38 33,44 0,44" fill="url(#busanBlueLogoGrad)" />
+            <svg class="city-official-svg" viewBox="0 0 190 50" height="38">
+              <!-- Busan Line-Art 'B' Symbol (100% exact from user image) -->
+              <g transform="translate(4, 3)" stroke="#38BDF8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <!-- Outer Frame -->
+                <path d="M 4 4 L 25 4 L 38 15 L 26 24 L 38 33 L 25 44 L 4 44 Z" />
+                <!-- Internal Geometry Lines -->
+                <line x1="4" y1="15" x2="25" y2="4" />
+                <line x1="4" y1="15" x2="26" y2="24" />
+                <line x1="4" y1="33" x2="26" y2="24" />
+                <line x1="4" y1="33" x2="25" y2="44" />
               </g>
               <!-- Busan City Text Logo -->
-              <text x="49" y="26" font-family="'Noto Sans KR', '맑은 고딕', sans-serif" font-weight="900" font-size="19.5" fill="#FFFFFF" letter-spacing="-0.8">부산광역시</text>
-              <text x="50" y="39" font-family="'Outfit', sans-serif" font-weight="700" font-size="7.5" fill="#CBD5E1" letter-spacing="0.6">BUSAN METROPOLITAN CITY</text>
+              <text x="50" y="26" font-family="'Noto Sans KR', '맑은 고딕', sans-serif" font-weight="900" font-size="19.5" fill="#FFFFFF" letter-spacing="-0.8">부산광역시</text>
+              <text x="51" y="39" font-family="'Outfit', sans-serif" font-weight="700" font-size="7.5" fill="#CBD5E1" letter-spacing="0.6">BUSAN METROPOLITAN CITY</text>
             </svg>
           </div>
 
