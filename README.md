@@ -33,6 +33,9 @@
   * **초기 비밀번호**: `busan123`
   * 누구나 실적 확인 및 건의는 가능하며, `[+ 업무/실적 등록]`, `[✏️ 수정]`, `[🗑️ 삭제]` 시 관리자 인증 팝업 출력
   * 비밀번호 변경 기능 지원 (`LocalStorage` 저장)
+* **📷 명함 인쇄용 고화질 QR 코드 (PNG & SVG)**:
+  * 웹사이트 주소 `https://office-fdq5.vercel.app/` 연결 전용 고화질 QR 코드 포함
+  * 명함 디자인 인쇄용 PNG (`qrcode_busan_officer.png`) 및 벡터 SVG (`qrcode_busan_officer.svg`) 다운로드 제공
 * **✉️ 기업애로 & 시책 아이디어 접수 창구**: 기업인들이 직접 애로사항을 접수하고 안내받는 소통 폼 (직통: `051-990-7171`, `pusan@korcham.net`)
 
 ---
