@@ -48,33 +48,106 @@
 
           <span class="cross-divider"><i class="fa-solid fa-xmark"></i></span>
 
-          <!-- 부산상공회의소 공식 로고 (다크 배경 전용 선명화) -->
+          <!-- 부산상공회의소 공식 로고 (첨부 심볼마크 100% 일치 반영) -->
           <div class="official-logo chamber-logo-official" title="부산상공회의소 공식 로고">
-            <svg class="chamber-official-svg" viewBox="0 0 195 50" height="38">
+            <svg class="chamber-official-svg" viewBox="0 0 225 50" height="38">
               <defs>
-                <linearGradient id="gearVivid" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#3B82F6" />
-                  <stop offset="100%" stop-color="#1D4ED8" />
+                <!-- Left Gear Gradient -->
+                <linearGradient id="bcciGearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1A3DB5"/>
+                  <stop offset="60%" stop-color="#0D2C9E"/>
+                  <stop offset="100%" stop-color="#0056B3"/>
+                </linearGradient>
+
+                <!-- Right Cyan Trail Gradient -->
+                <linearGradient id="bcciTrailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#007BCE"/>
+                  <stop offset="35%" stop-color="#009CE8"/>
+                  <stop offset="70%" stop-color="#00B4F5"/>
+                  <stop offset="90%" stop-color="#48CAE4" stop-opacity="0.85"/>
+                  <stop offset="100%" stop-color="#90E0EF" stop-opacity="0"/>
                 </linearGradient>
               </defs>
-              <!-- Gear Symbol Left Half -->
-              <g transform="translate(3, 4)">
-                <!-- Gear Outer Tooth Shell -->
-                <path d="M 18 2 C 20 2, 20 5, 22 5 C 24 5, 25 2, 27 3 C 29 4, 28 7, 30 8 C 32 9, 34 7, 36 9 C 37 11, 34 13, 35 15 C 36 17, 39 17, 39 19 C 39 21, 36 21, 35 23 C 34 25, 37 27, 36 29 C 34 31, 32 29, 30 30 C 28 31, 29 34, 27 35 C 25 36, 24 33, 22 33 C 20 33, 20 36, 18 36 Z" fill="url(#gearVivid)" />
-                <circle cx="18" cy="19" r="8" fill="#0B192C" />
-                <!-- Digital Pixel Spark Particle Spread -->
-                <rect x="20" y="3" width="3.5" height="3.5" fill="#38BDF8" />
-                <rect x="25" y="7" width="4.5" height="3.5" fill="#0284C7" />
-                <rect x="21" y="13" width="6" height="3.5" fill="#38BDF8" />
-                <rect x="29" y="11" width="4.5" height="3.5" fill="#7DD3FC" />
-                <rect x="22" y="19" width="9" height="3.5" fill="#38BDF8" />
-                <rect x="33" y="17" width="6" height="3.5" fill="#BAE6FD" />
-                <rect x="21" y="25" width="8" height="3.5" fill="#38BDF8" />
-                <rect x="30" y="27" width="5" height="3.5" fill="#7DD3FC" />
-                <rect x="22" y="31" width="6" height="3.5" fill="#0284C7" />
+
+              <!-- BCCI Symbol Group -->
+              <g transform="translate(2, 6) scale(0.68)">
+                <!-- Right Side Gradient Box fading out -->
+                <path d="M 32 3 L 86 3 C 89 3, 92 5, 92 8 L 92 48 C 92 51, 89 53, 86 53 L 32 53 Z" fill="url(#bcciTrailGrad)"/>
+
+                <!-- Left Half Solid Gear -->
+                <path d="M 32 3 L 29 3 C 27 3, 26 5, 24 6 L 19 8 C 17 9, 16 11, 16 13 L 17 16 C 14 18, 12 20, 10 23 L 7 21 C 5 20, 3 21, 3 23 L 2 28 C 1 30, 2 32, 4 33 L 7 34 C 8 36, 9 39, 11 41 L 8 44 C 7 46, 8 48, 9 49 L 14 52 C 16 53, 18 53, 19 51 L 21 48 C 23 49, 26 50, 29 51 L 29 53 L 32 53 L 32 37 A 9 9 0 0 0 32 19 Z" fill="url(#bcciGearGrad)"/>
+
+                <!-- Center Hub Inner Hole -->
+                <path d="M 32 19 A 9 9 0 0 0 32 37 Z" fill="#FFFFFF"/>
+
+                <!-- Halftone Dot Matrix Array on the Right -->
+                <g fill="#FFFFFF">
+                  <!-- Col 1 -->
+                  <circle cx="35" cy="5" r="1.3"/>
+                  <circle cx="35" cy="10" r="1.5"/>
+                  <circle cx="35" cy="15" r="1.8"/>
+                  <circle cx="35" cy="20" r="2.0"/>
+                  <circle cx="35" cy="24" r="2.1"/>
+                  <circle cx="35" cy="28" r="2.2"/>
+                  <circle cx="35" cy="32" r="2.1"/>
+                  <circle cx="35" cy="36" r="2.0"/>
+                  <circle cx="35" cy="41" r="1.8"/>
+                  <circle cx="35" cy="46" r="1.5"/>
+                  <circle cx="35" cy="51" r="1.3"/>
+                  <!-- Col 2 -->
+                  <circle cx="39" cy="4" r="1.0"/>
+                  <circle cx="39" cy="8" r="1.4"/>
+                  <circle cx="39" cy="13" r="1.8"/>
+                  <circle cx="39" cy="18" r="2.1"/>
+                  <circle cx="39" cy="23" r="2.3"/>
+                  <circle cx="39" cy="28" r="2.4"/>
+                  <circle cx="39" cy="33" r="2.3"/>
+                  <circle cx="39" cy="38" r="2.1"/>
+                  <circle cx="39" cy="43" r="1.8"/>
+                  <circle cx="39" cy="48" r="1.4"/>
+                  <circle cx="39" cy="52" r="1.0"/>
+                  <!-- Col 3 -->
+                  <circle cx="44" cy="7" r="1.3"/>
+                  <circle cx="44" cy="12" r="1.7"/>
+                  <circle cx="44" cy="17" r="2.2"/>
+                  <circle cx="44" cy="22" r="2.4"/>
+                  <circle cx="44" cy="28" r="2.5"/>
+                  <circle cx="44" cy="34" r="2.4"/>
+                  <circle cx="44" cy="39" r="2.2"/>
+                  <circle cx="44" cy="44" r="1.7"/>
+                  <circle cx="44" cy="49" r="1.3"/>
+                  <!-- Col 4 -->
+                  <circle cx="49" cy="11" r="1.4"/>
+                  <circle cx="49" cy="17" r="2.0"/>
+                  <circle cx="49" cy="23" r="2.4"/>
+                  <circle cx="49" cy="28" r="2.5"/>
+                  <circle cx="49" cy="33" r="2.4"/>
+                  <circle cx="49" cy="39" r="2.0"/>
+                  <circle cx="49" cy="45" r="1.4"/>
+                  <!-- Col 5 -->
+                  <circle cx="54" cy="15" r="1.5"/>
+                  <circle cx="54" cy="21" r="2.2"/>
+                  <circle cx="54" cy="28" r="2.4"/>
+                  <circle cx="54" cy="35" r="2.2"/>
+                  <circle cx="54" cy="41" r="1.5"/>
+                  <!-- Col 6 -->
+                  <circle cx="59" cy="18" r="1.6"/>
+                  <circle cx="59" cy="25" r="2.2"/>
+                  <circle cx="59" cy="31" r="2.2"/>
+                  <circle cx="59" cy="38" r="1.6"/>
+                  <!-- Col 7 -->
+                  <circle cx="63" cy="23" r="1.5"/>
+                  <circle cx="63" cy="28" r="1.8"/>
+                  <circle cx="63" cy="33" r="1.5"/>
+                  <!-- Col 8 -->
+                  <circle cx="67" cy="26" r="1.1"/>
+                  <circle cx="67" cy="30" r="1.1"/>
+                </g>
               </g>
-              <!-- Text Logo (White for dark bg) -->
-              <text x="50" y="31" font-family="'Noto Sans KR', '맑은 고딕', sans-serif" font-weight="900" font-size="20.5" fill="#FFFFFF" letter-spacing="-0.8">부산상공회의소</text>
+
+              <!-- Busan Chamber Text Logo -->
+              <text x="70" y="26" font-family="'Noto Sans KR', '맑은 고딕', sans-serif" font-weight="900" font-size="19.5" fill="#FFFFFF" letter-spacing="-0.8">부산상공회의소</text>
+              <text x="71" y="39" font-family="'Outfit', sans-serif" font-weight="700" font-size="7" fill="#CBD5E1" letter-spacing="0.4">BUSAN CHAMBER OF COMMERCE &amp; INDUSTRY</text>
             </svg>
           </div>
         </div>
