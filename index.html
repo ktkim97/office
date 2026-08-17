@@ -154,14 +154,8 @@
         <h1 class="nav-title">기업정책협력관 <span>비전 & 성과 포털</span></h1>
       </div>
       <nav class="nav-actions">
-        <button id="openRegisterBtn" class="btn btn-primary">
-          <i class="fa-solid fa-plus"></i> 업무/실적 등록
-        </button>
-        <button id="openSuggestBtn" class="btn btn-secondary">
-          <i class="fa-solid fa-paper-plane"></i> 기업애로/아이디어 건의
-        </button>
-        <button id="openAdminSettingsBtn" class="btn btn-dark-outline" title="관리자 비밀번호 설정">
-          <i class="fa-solid fa-lock"></i> <span id="adminStatusText">비밀번호 설정</span>
+        <button id="openSuggestBtn" class="btn btn-suggest-header" title="기업 현장 애로 및 정책 아이디어 접수">
+          <i class="fa-solid fa-paper-plane"></i> <span>기업애로 / 아이디어 건의</span>
         </button>
       </nav>
     </div>
@@ -173,13 +167,24 @@
       <div class="hero-card">
         <div class="hero-content">
           <div class="badge-row">
-            <span class="badge badge-accent"><i class="fa-solid fa-shield-halved"></i> 부산시 파견 현장관</span>
-            <span class="badge badge-light"><i class="fa-solid fa-handshake"></i> 원스톱 민관 가교</span>
+            <span class="badge badge-accent"><i class="fa-solid fa-comments"></i> 1:1 기업소통 직통 핫라인</span>
+            <span class="badge badge-light"><i class="fa-solid fa-handshake"></i> 부산시 ✕ 부산상의 원스톱 가교</span>
           </div>
-          <h2>"부산 지역 기업의 성장이 곧 부산의 미래입니다"</h2>
+          <h2>"부산 지역 기업의 목소리가 곧 미래 정책이 됩니다"</h2>
           <p class="hero-desc">
-            부산광역시와 부산상공회의소 간 가교 역할을 수행하는 <strong>기업정책협력관</strong>은 현장의 생생한 목소리를 수렴하여 규제를 해소하고, 기업 맞춤형 시책을 발굴하여 지역 경제 활력 제고에 전력을 다하고 있습니다.
+            부산광역시 파견 <strong>기업정책협력관</strong>은 현장의 생생한 기업 애로와 규제 개선 요구를 직접 수렴하여 시책에 반영하고, 민관이 함께 성장하는 최적의 기업 환경을 조성합니다.
           </p>
+
+          <!-- Core Action: Suggestion CTA Highlight Box -->
+          <div class="hero-cta-box">
+            <button id="heroSuggestBtn" class="btn btn-hero-suggest">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>기업애로 및 시책 아이디어 건의하기</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <span class="hero-cta-sub"><i class="fa-solid fa-bolt"></i> 접수 즉시 기업정책협력관이 직접 검토하여 신속히 피드백 드립니다</span>
+          </div>
+
           <div class="officer-info">
             <div class="info-item">
               <span class="label">소속</span>
@@ -190,7 +195,7 @@
               <span class="value">기업정책협력관 (기업 현장 밀착지원)</span>
             </div>
             <div class="info-item">
-              <span class="label">소통 창구</span>
+              <span class="label">직통 소통 창구</span>
               <span class="value"><i class="fa-solid fa-phone"></i> <strong>051-990-7171</strong> &nbsp;|&nbsp; <i class="fa-solid fa-envelope"></i> <strong>pusan@korcham.net</strong></span>
             </div>
           </div>
@@ -368,6 +373,29 @@
           <p>규제 개선이 필요하거나 현장의 어려움이 있으신가요? 기업정책협력관이 직접 검토하여 부산시 및 유관기관과 해결책을 모색합니다.</p>
         </div>
         <button id="openSuggestBtnBottom" class="btn btn-light-glow"><i class="fa-solid fa-paper-plane"></i> 애로/시책 건의하기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin / Task Management Section (하단 관리자 전용 메뉴) -->
+  <section class="admin-bottom-section">
+    <div class="container">
+      <div class="admin-bottom-card">
+        <div class="admin-bottom-info">
+          <div class="admin-icon-circle"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="admin-text-group">
+            <h5>기업정책협력관 실적 관리 & 시스템 설정</h5>
+            <p>부산광역시 ✕ 부산상공회의소 파견 협력관 전용 업무 등록 및 관리 메뉴입니다.</p>
+          </div>
+        </div>
+        <div class="admin-bottom-actions">
+          <button id="openRegisterBtn" class="btn btn-admin-primary">
+            <i class="fa-solid fa-plus"></i> 업무/실적 신규 등록
+          </button>
+          <button id="openAdminSettingsBtn" class="btn btn-admin-secondary" title="관리자 비밀번호 설정">
+            <i class="fa-solid fa-lock"></i> <span id="adminStatusText">비밀번호 설정</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -598,17 +626,17 @@
       <i class="fa-solid fa-house"></i>
       <span>홈</span>
     </button>
+    <button class="m-tab-item m-tab-highlight" id="mTabSuggest">
+      <div class="m-highlight-circle"><i class="fa-solid fa-paper-plane"></i></div>
+      <span>애로건의</span>
+    </button>
     <button class="m-tab-item" id="mTabRegister">
       <i class="fa-solid fa-square-plus"></i>
       <span>실적등록</span>
     </button>
-    <button class="m-tab-item" id="mTabSuggest">
-      <i class="fa-solid fa-paper-plane"></i>
-      <span>애로건의</span>
-    </button>
     <button class="m-tab-item" id="mTabSettings">
       <i class="fa-solid fa-user-lock"></i>
-      <span>관리자설정</span>
+      <span>관리설정</span>
     </button>
   </nav>
 

@@ -422,8 +422,10 @@ class PolicyTrackerApp {
     const openSuggestHandler = () => {
       this.openModal(this.suggestModal);
     };
-    this.openSuggestBtn.addEventListener("click", openSuggestHandler);
-    this.openSuggestBtnBottom.addEventListener("click", openSuggestHandler);
+    if (this.openSuggestBtn) this.openSuggestBtn.addEventListener("click", openSuggestHandler);
+    if (this.openSuggestBtnBottom) this.openSuggestBtnBottom.addEventListener("click", openSuggestHandler);
+    const heroSuggestBtn = document.getElementById("heroSuggestBtn");
+    if (heroSuggestBtn) heroSuggestBtn.addEventListener("click", openSuggestHandler);
 
     // Close Modals
     document.querySelectorAll(".closeDetailModalBtn").forEach(btn => {
