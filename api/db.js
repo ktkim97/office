@@ -1,4 +1,5 @@
 const GITHUB_DB_URL = "https://api.github.com/repos/ktkim97/office/contents/db.json";
+const RAW_DB_URL = "https://raw.githubusercontent.com/ktkim97/office/main/db.json";
 const GITHUB_TOKEN = Buffer.from('Z2hwX1pSNkFOWm1jYmJwR2thYno1V1Vza1l1SzdSTzVSSjFXbDN3Vg==', 'base64').toString('utf-8');
 
 module.exports = async (req, res) => {
@@ -13,26 +14,15 @@ module.exports = async (req, res) => {
 
   if (req.method === "GET") {
     try {
-      const ghRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
-        headers: {
-          "Authorization": "Bearer " + GITHUB_TOKEN,
-          "Accept": "application/vnd.github.v3+json",
-          "User-Agent": "BusanOfficerApp"
-        }
-      });
-      if (ghRes.ok) {
-        const data = await ghRes.json();
-        const cleanB64 = data.content.replace(/[^A-Za-z0-9+/=]/g, '');
-        const jsonStr = Buffer.from(cleanB64, 'base64').toString('utf-8');
-        const parsed = JSON.parse(jsonStr);
+      const rawRes = await fetch(RAW_DB_URL + "?t=" + Date.now());
+      if (rawRes.ok) {
+        const parsed = await rawRes.json();
         return res.status(200).json({
-          sha: data.sha,
           tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
           suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
         });
       } else {
-        const errText = await ghRes.text();
-        return res.status(ghRes.status).json({ error: "Failed to fetch db.json from GitHub", status: ghRes.status, details: errText });
+        return res.status(500).json({ error: "Failed to fetch raw db.json" });
       }
     } catch (e) {
       return res.status(500).json({ error: e.message });
@@ -47,10 +37,10 @@ module.exports = async (req, res) => {
       }
       const { tasks, suggestions } = bodyData || {};
 
-      // Get current SHA
+      // Get current SHA from GitHub API
       const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
         headers: {
-          "Authorization": "Bearer " + GITHUB_TOKEN,
+          "Authorization": "token " + GITHUB_TOKEN,
           "Accept": "application/vnd.github.v3+json",
           "User-Agent": "BusanOfficerApp"
         }
@@ -82,7 +72,7 @@ module.exports = async (req, res) => {
       const putRes = await fetch(GITHUB_DB_URL, {
         method: "PUT",
         headers: {
-          "Authorization": "Bearer " + GITHUB_TOKEN,
+          "Authorization": "token " + GITHUB_TOKEN,
           "Content-Type": "application/json",
           "Accept": "application/vnd.github.v3+json",
           "User-Agent": "BusanOfficerApp"
