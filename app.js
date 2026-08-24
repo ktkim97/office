@@ -208,6 +208,26 @@ const INITIAL_TASKS = [
   }
 ];
 
+// Robust UTF-8 Base64 Helpers (Supports all Korean text & Unicode without URIError)
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+function base64ToUtf8(base64Str) {
+  const cleanBase64 = base64Str.replace(/[^A-Za-z0-9+/=]/g, '');
+  const binary = atob(cleanBase64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
 // GitHub Shared Cloud Database Configuration
 const GITHUB_DB_URL = "https://api.github.com/repos/ktkim97/office/contents/db.json";
 const GITHUB_TOKEN = atob("Z2hwX1pSNkFOWm1jYmJwR2thYno1V1Vza1l1SzdSTzVSSjFXbDN3Vg==");
@@ -264,7 +284,7 @@ class PolicyTrackerApp {
 
   async fetchFromCloud() {
     try {
-      const res = await fetch(GITHUB_DB_URL, {
+      const res = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
         headers: {
           "Authorization": "token " + GITHUB_TOKEN,
           "Accept": "application/vnd.github.v3+json"
@@ -275,12 +295,12 @@ class PolicyTrackerApp {
         const data = await res.json();
         if (data.sha !== this.currentSha) {
           this.currentSha = data.sha;
-          const contentDecoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+          const contentDecoded = base64ToUtf8(data.content);
           const parsed = JSON.parse(contentDecoded);
           const cloudTasks = parsed.data ? parsed.data.tasks : (parsed.tasks || []);
           const cloudSuggestions = parsed.data ? parsed.data.suggestions : (parsed.suggestions || []);
 
-          if (cloudTasks && cloudTasks.length > 0) {
+          if (Array.isArray(cloudTasks)) {
             const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
             if (hasChanged) {
               this.tasks = cloudTasks;
@@ -300,6 +320,19 @@ class PolicyTrackerApp {
 
   async syncToCloud(tasks, suggestions = []) {
     try {
+      // Get latest SHA first to prevent SHA mismatch error
+      const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
+        headers: {
+          "Authorization": "token " + GITHUB_TOKEN,
+          "Accept": "application/vnd.github.v3+json"
+        },
+        cache: "no-store"
+      });
+      if (getRes.ok) {
+        const getJson = await getRes.json();
+        if (getJson.sha) this.currentSha = getJson.sha;
+      }
+
       const payload = {
         name: "busan_officer_shared_db",
         data: {
@@ -309,7 +342,7 @@ class PolicyTrackerApp {
       };
 
       const jsonStr = JSON.stringify(payload, null, 2);
-      const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+      const base64Content = utf8ToBase64(jsonStr);
 
       const body = {
         message: "Update shared database (Realtime Cloud Sync)",
