@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     try {
       const ghRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
         headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
+          "Authorization": "Bearer " + GITHUB_TOKEN,
           "Accept": "application/vnd.github.v3+json",
           "User-Agent": "BusanOfficerApp"
         }
@@ -31,7 +31,8 @@ module.exports = async (req, res) => {
           suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
         });
       } else {
-        return res.status(ghRes.status).json({ error: "Failed to fetch db.json from GitHub" });
+        const errText = await ghRes.text();
+        return res.status(ghRes.status).json({ error: "Failed to fetch db.json from GitHub", status: ghRes.status, details: errText });
       }
     } catch (e) {
       return res.status(500).json({ error: e.message });
@@ -49,7 +50,7 @@ module.exports = async (req, res) => {
       // Get current SHA
       const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
         headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
+          "Authorization": "Bearer " + GITHUB_TOKEN,
           "Accept": "application/vnd.github.v3+json",
           "User-Agent": "BusanOfficerApp"
         }
@@ -81,7 +82,7 @@ module.exports = async (req, res) => {
       const putRes = await fetch(GITHUB_DB_URL, {
         method: "PUT",
         headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
+          "Authorization": "Bearer " + GITHUB_TOKEN,
           "Content-Type": "application/json",
           "Accept": "application/vnd.github.v3+json",
           "User-Agent": "BusanOfficerApp"
