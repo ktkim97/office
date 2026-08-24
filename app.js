@@ -278,27 +278,21 @@ class PolicyTrackerApp {
 
   async initCloudSync() {
     await this.fetchFromCloud();
-    // Poll Cloud DB every 2.5 seconds so changes on PC appear on mobile in real-time
-    setInterval(() => this.fetchFromCloud(), 2500);
+    // Poll Cloud DB every 2 seconds so changes on PC appear on mobile in real-time
+    setInterval(() => this.fetchFromCloud(), 2000);
   }
 
   async fetchFromCloud() {
     try {
-      const res = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
-        headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
-          "Accept": "application/vnd.github.v3+json"
-        },
+      const res = await fetch("/api/db?t=" + Date.now(), {
         cache: "no-store"
       });
       if (res.ok) {
         const data = await res.json();
         if (data.sha !== this.currentSha) {
           this.currentSha = data.sha;
-          const contentDecoded = base64ToUtf8(data.content);
-          const parsed = JSON.parse(contentDecoded);
-          const cloudTasks = parsed.data ? parsed.data.tasks : (parsed.tasks || []);
-          const cloudSuggestions = parsed.data ? parsed.data.suggestions : (parsed.suggestions || []);
+          const cloudTasks = data.tasks || [];
+          const cloudSuggestions = data.suggestions || [];
 
           if (Array.isArray(cloudTasks)) {
             const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
@@ -320,51 +314,21 @@ class PolicyTrackerApp {
 
   async syncToCloud(tasks, suggestions = []) {
     try {
-      // Get latest SHA first to prevent SHA mismatch error
-      const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
+      const res = await fetch("/api/db", {
+        method: "POST",
         headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
-          "Accept": "application/vnd.github.v3+json"
+          "Content-Type": "application/json"
         },
-        cache: "no-store"
-      });
-      if (getRes.ok) {
-        const getJson = await getRes.json();
-        if (getJson.sha) this.currentSha = getJson.sha;
-      }
-
-      const payload = {
-        name: "busan_officer_shared_db",
-        data: {
+        body: JSON.stringify({
           tasks: tasks,
           suggestions: suggestions
-        }
-      };
-
-      const jsonStr = JSON.stringify(payload, null, 2);
-      const base64Content = utf8ToBase64(jsonStr);
-
-      const body = {
-        message: "Update shared database (Realtime Cloud Sync)",
-        content: base64Content,
-        branch: "main"
-      };
-      if (this.currentSha) body.sha = this.currentSha;
-
-      const res = await fetch(GITHUB_DB_URL, {
-        method: "PUT",
-        headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
-          "Content-Type": "application/json",
-          "Accept": "application/vnd.github.v3+json"
-        },
-        body: JSON.stringify(body)
+        })
       });
 
       if (res.ok) {
         const resJson = await res.json();
-        if (resJson.content && resJson.content.sha) {
-          this.currentSha = resJson.content.sha;
+        if (resJson.sha) {
+          this.currentSha = resJson.sha;
         }
         this.updateCloudStatusBadge(true);
       }
