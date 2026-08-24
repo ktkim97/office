@@ -69,6 +69,11 @@
   box-sizing: border-box;
 }
 
+body, h1, h2, h3, h4, h5, h6, p, span, div, a, button, label, input, textarea, select {
+  word-break: keep-all;
+  word-wrap: break-word;
+}
+
 body {
   font-family: 'Noto Sans KR', 'Outfit', sans-serif;
   background-color: var(--color-bg-main);

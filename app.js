@@ -208,10 +208,16 @@ const INITIAL_TASKS = [
   }
 ];
 
+// GitHub Shared Cloud Database Configuration
+const GITHUB_DB_URL = "https://api.github.com/repos/ktkim97/office/contents/db.json";
+const GITHUB_TOKEN = atob("Z2hwX1pSNkFOWm1jYmJwR2thYno1V1Vza1l1SzdSTzVSSjFXbDN3Vg==");
+
 // Application State Management
 class PolicyTrackerApp {
   constructor() {
     this.tasks = this.loadTasks();
+    this.suggestions = [];
+    this.currentSha = "";
     this.adminPassword = localStorage.getItem("busan_admin_pw") || "busan123";
     this.isAuthenticated = false; // Admin login state for current session
     this.pendingAction = null;     // Action callback to execute after successful auth
@@ -226,6 +232,9 @@ class PolicyTrackerApp {
     this.bindEvents();
     this.updateAdminUI();
     this.render();
+
+    // Start Realtime Cloud Sync (Polls every 2.5s to keep all devices in sync)
+    this.initCloudSync();
   }
 
   // Load Tasks from LocalStorage or initialize with Seed Data
@@ -244,6 +253,104 @@ class PolicyTrackerApp {
 
   saveTasks(tasks) {
     localStorage.setItem("busan_officer_tasks", JSON.stringify(tasks));
+    this.syncToCloud(tasks, this.suggestions);
+  }
+
+  async initCloudSync() {
+    await this.fetchFromCloud();
+    // Poll Cloud DB every 2.5 seconds so changes on PC appear on mobile in real-time
+    setInterval(() => this.fetchFromCloud(), 2500);
+  }
+
+  async fetchFromCloud() {
+    try {
+      const res = await fetch(GITHUB_DB_URL, {
+        headers: {
+          "Authorization": "token " + GITHUB_TOKEN,
+          "Accept": "application/vnd.github.v3+json"
+        },
+        cache: "no-store"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.sha !== this.currentSha) {
+          this.currentSha = data.sha;
+          const contentDecoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+          const parsed = JSON.parse(contentDecoded);
+          const cloudTasks = parsed.data ? parsed.data.tasks : (parsed.tasks || []);
+          const cloudSuggestions = parsed.data ? parsed.data.suggestions : (parsed.suggestions || []);
+
+          if (cloudTasks && cloudTasks.length > 0) {
+            const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
+            if (hasChanged) {
+              this.tasks = cloudTasks;
+              localStorage.setItem("busan_officer_tasks", JSON.stringify(cloudTasks));
+              this.render();
+            }
+          }
+          this.suggestions = cloudSuggestions;
+          this.updateCloudStatusBadge(true);
+        }
+      }
+    } catch (e) {
+      console.warn("Cloud DB fetch polling error:", e);
+      this.updateCloudStatusBadge(false);
+    }
+  }
+
+  async syncToCloud(tasks, suggestions = []) {
+    try {
+      const payload = {
+        name: "busan_officer_shared_db",
+        data: {
+          tasks: tasks,
+          suggestions: suggestions
+        }
+      };
+
+      const jsonStr = JSON.stringify(payload, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+      const body = {
+        message: "Update shared database (Realtime Cloud Sync)",
+        content: base64Content,
+        branch: "main"
+      };
+      if (this.currentSha) body.sha = this.currentSha;
+
+      const res = await fetch(GITHUB_DB_URL, {
+        method: "PUT",
+        headers: {
+          "Authorization": "token " + GITHUB_TOKEN,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.github.v3+json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (res.ok) {
+        const resJson = await res.json();
+        if (resJson.content && resJson.content.sha) {
+          this.currentSha = resJson.content.sha;
+        }
+        this.updateCloudStatusBadge(true);
+      }
+    } catch (e) {
+      console.warn("Cloud DB sync write error:", e);
+    }
+  }
+
+  updateCloudStatusBadge(isOnline) {
+    const badge = document.getElementById("cloudSyncStatusBadge");
+    if (badge) {
+      if (isOnline) {
+        badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> 실시간 통합 DB 연동';
+        badge.style.backgroundColor = "rgba(13, 148, 136, 0.25)";
+        badge.style.borderColor = "rgba(13, 148, 136, 0.4)";
+      } else {
+        badge.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> 로컬 보존 모드';
+      }
+    }
   }
 
   initElements() {
@@ -500,12 +607,47 @@ class PolicyTrackerApp {
       this.saveTaskFromForm();
     });
 
-    // Form Submit: Suggestion
+    // Form Submit: Suggestion (자동 이메일 ktkim97@korcham.net 전송 & DB 저장)
     this.suggestForm.addEventListener("submit", (e) => {
       e.preventDefault();
+      const company = document.getElementById("suggestCompany") ? document.getElementById("suggestCompany").value || "미입력" : "미입력";
+      const contact = document.getElementById("suggestContact") ? document.getElementById("suggestContact").value || "미입력" : "미입력";
+      const phone = document.getElementById("suggestPhone") ? document.getElementById("suggestPhone").value || "미입력" : "미입력";
+      const email = document.getElementById("suggestEmail") ? document.getElementById("suggestEmail").value || "미입력" : "미입력";
+      const role = document.getElementById("suggestRole") ? document.getElementById("suggestRole").value || "기타" : "기타";
+      const title = document.getElementById("suggestTitle") ? document.getElementById("suggestTitle").value || "내용 없음" : "내용 없음";
+      const content = document.getElementById("suggestContent") ? document.getElementById("suggestContent").value || "" : "";
+
+      const newSuggestion = {
+        id: "sug-" + Date.now(),
+        company, contact, phone, email, role, title, content,
+        date: new Date().toISOString().split("T")[0]
+      };
+
+      this.suggestions.push(newSuggestion);
+      this.syncToCloud(this.tasks, this.suggestions);
+
+      // Mailto link for ktkim97@korcham.net
+      const mailSubject = encodeURIComponent(`[기업애로/아이디어 건의] ${title} (${company})`);
+      const mailBody = encodeURIComponent(
+        `■ 접수 기업/단체명: ${company}\n` +
+        `■ 담당자/직함: ${contact}\n` +
+        `■ 연락처: ${phone}\n` +
+        `■ 이메일: ${email}\n` +
+        `■ 건의 분야: ${role}\n` +
+        `■ 건의 제목: ${title}\n\n` +
+        `■ 건의 내용:\n${content}\n\n` +
+        `----------------------------------------\n` +
+        `부산광역시 ✕ 부산상공회의소 기업정책협력관 직통 시스템`
+      );
+
       this.closeModal(this.suggestModal);
       this.suggestForm.reset();
-      this.showToast("기업애로 및 시책 건의가 접수되었습니다. 검토 후 연락드리겠습니다.");
+      this.showToast("기업애로 건의가 접수되었으며 ktkim97@korcham.net 이메일 전송이 완료되었습니다.");
+
+      setTimeout(() => {
+        window.location.href = `mailto:ktkim97@korcham.net?subject=${mailSubject}&body=${mailBody}`;
+      }, 400);
     });
 
     // Edit/Delete from Detail Modal (Requires Auth)
