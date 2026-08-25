@@ -21,6 +21,18 @@
         ]
       }
     ],
-    "suggestions": []
+    "suggestions": [
+      {
+        "id": "sug-1787616796320",
+        "company": "미입력",
+        "contact": "미입력",
+        "phone": "미입력",
+        "email": "미입력",
+        "role": "기타",
+        "title": "내용 없음",
+        "content": "",
+        "date": "2026-08-25"
+      }
+    ]
   }
 }
