@@ -133,6 +133,12 @@ class PolicyTrackerApp {
         const cloudTasks = data.tasks || [];
         const cloudSuggestions = data.suggestions || [];
 
+        // Unified Admin Password sync across all devices
+        if (data.adminPassword && data.adminPassword !== this.adminPassword) {
+          this.adminPassword = data.adminPassword;
+          localStorage.setItem("busan_admin_pw", data.adminPassword);
+        }
+
         if (Array.isArray(cloudTasks) && cloudTasks.length > 0) {
           const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
           if (hasChanged || data.sha !== this.currentSha || this.tasks.length === 0) {
@@ -151,7 +157,7 @@ class PolicyTrackerApp {
     }
   }
 
-  async syncToCloud(tasks, suggestions = []) {
+  async syncToCloud(tasks, suggestions = [], adminPassword = null) {
     try {
       const res = await fetch("/api/db", {
         method: "POST",
@@ -160,7 +166,8 @@ class PolicyTrackerApp {
         },
         body: JSON.stringify({
           tasks: tasks,
-          suggestions: suggestions
+          suggestions: suggestions,
+          adminPassword: adminPassword || this.adminPassword
         })
       });
 
@@ -442,9 +449,10 @@ class PolicyTrackerApp {
 
       this.adminPassword = newPw;
       localStorage.setItem("busan_admin_pw", newPw);
+      this.syncToCloud(this.tasks, this.suggestions, newPw);
       this.changePwForm.reset();
       this.closeModal(this.changePwModal);
-      this.showToast("관리자 비밀번호가 성공적으로 변경되었습니다.");
+      this.showToast("관리자 비밀번호가 변경되어 모든 기기(PC/핸드폰)에 실시간 통합 적용되었습니다.");
     });
 
     // Form Submit: Task Save/Update

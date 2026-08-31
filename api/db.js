@@ -29,6 +29,7 @@ module.exports = async (req, res) => {
         const parsed = JSON.parse(jsonStr);
         return res.status(200).json({
           sha: data.sha,
+          adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
           tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
           suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
         });
@@ -38,6 +39,7 @@ module.exports = async (req, res) => {
         if (rawRes.ok) {
           const parsed = await rawRes.json();
           return res.status(200).json({
+            adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
             tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
             suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
           });
@@ -55,22 +57,11 @@ module.exports = async (req, res) => {
       if (typeof bodyData === "string") {
         bodyData = JSON.parse(bodyData);
       }
-      const { tasks, suggestions } = bodyData || {};
-
-      const payload = {
-        name: "busan_officer_shared_db",
-        data: {
-          tasks: tasks || [],
-          suggestions: suggestions || []
-        }
-      };
-
-      const jsonStr = JSON.stringify(payload, null, 2);
-      const base64Content = Buffer.from(jsonStr, 'utf-8').toString('base64');
+      const { tasks, suggestions, adminPassword } = bodyData || {};
 
       let lastError = null;
       for (let attempt = 0; attempt < 3; attempt++) {
-        // Fetch latest SHA from GitHub API
+        // Fetch latest SHA and existing content from GitHub API
         const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
           headers: {
             "Authorization": "token " + GITHUB_TOKEN,
@@ -79,10 +70,31 @@ module.exports = async (req, res) => {
           }
         });
         let currentSha = "";
+        let existingPassword = "busan123";
         if (getRes.ok) {
           const getJson = await getRes.json();
           currentSha = getJson.sha;
+          try {
+            const cleanB64 = getJson.content.replace(/[^A-Za-z0-9+/=]/g, '');
+            const jsonStr = Buffer.from(cleanB64, 'base64').toString('utf-8');
+            const parsed = JSON.parse(jsonStr);
+            if (parsed.data && parsed.data.adminPassword) {
+              existingPassword = parsed.data.adminPassword;
+            }
+          } catch (e) {}
         }
+
+        const payload = {
+          name: "busan_officer_shared_db",
+          data: {
+            adminPassword: adminPassword || existingPassword,
+            tasks: tasks || [],
+            suggestions: suggestions || []
+          }
+        };
+
+        const jsonStr = JSON.stringify(payload, null, 2);
+        const base64Content = Buffer.from(jsonStr, 'utf-8').toString('base64');
 
         const body = {
           message: "Update shared database (Realtime Cloud Sync via Vercel API)",
