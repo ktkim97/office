@@ -489,7 +489,7 @@ class PolicyTrackerApp {
 
       this.closeModal(this.suggestModal);
       this.suggestForm.reset();
-      this.showToast("기업애로 건의가 앱에서 즉시 접수되어 ktkim97@korcham.net 협력관에게 자동 전달되었습니다.");
+      this.showToast("기업애로 건의가 담당 기업정책협력관(ktkim97@korcham.net, sosunny@korea.kr)에게 자동 발송 및 접수되었습니다.");
     });
 
     // Edit/Delete from Detail Modal (Requires Auth)
