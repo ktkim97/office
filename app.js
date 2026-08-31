@@ -624,29 +624,31 @@ class PolicyTrackerApp {
     const policyCount = this.tasks.filter(t => t.role === "POLICY").length;
     const coopCount = this.tasks.filter(t => t.role === "COOPERATION").length;
 
-    this.kpiTroubleCount.textContent = troubleCount;
-    this.kpiReformCount.textContent = reformCount;
-    this.kpiPolicyCount.textContent = policyCount;
-    this.kpiCoopCount.textContent = coopCount;
+    if (this.kpiTroubleCount) this.kpiTroubleCount.textContent = troubleCount;
+    if (this.kpiReformCount) this.kpiReformCount.textContent = reformCount;
+    if (this.kpiPolicyCount) this.kpiPolicyCount.textContent = policyCount;
+    if (this.kpiCoopCount) this.kpiCoopCount.textContent = coopCount;
 
-    // Total Count
-    this.statTotalItems.textContent = this.tasks.length;
+    // Total Count (Safely check if element exists)
+    if (this.statTotalItems) this.statTotalItems.textContent = this.tasks.length;
 
     // Status Tab Counts
     const doneCount = this.tasks.filter(t => t.status === "DONE").length;
     const progressCount = this.tasks.filter(t => t.status === "IN_PROGRESS").length;
     const plannedCount = this.tasks.filter(t => t.status === "PLANNED").length;
 
-    this.cntAll.textContent = this.tasks.length;
-    this.cntDone.textContent = doneCount;
-    this.cntProgress.textContent = progressCount;
-    this.cntPlanned.textContent = plannedCount;
+    if (this.cntAll) this.cntAll.textContent = this.tasks.length;
+    if (this.cntDone) this.cntDone.textContent = doneCount;
+    if (this.cntProgress) this.cntProgress.textContent = progressCount;
+    if (this.cntPlanned) this.cntPlanned.textContent = plannedCount;
 
     // Resolution Rate Calculation (Trouble & Reform Done vs Total)
-    const totalTroubleReform = troubleCount + reformCount;
-    const doneTroubleReform = this.tasks.filter(t => (t.role === "TROUBLE" || t.role === "REFORM") && t.status === "DONE").length;
-    const rate = totalTroubleReform > 0 ? ((doneTroubleReform / totalTroubleReform) * 100).toFixed(1) : 100;
-    this.statResolutionRate.textContent = `${rate}%`;
+    if (this.statResolutionRate) {
+      const totalTroubleReform = troubleCount + reformCount;
+      const doneTroubleReform = this.tasks.filter(t => (t.role === "TROUBLE" || t.role === "REFORM") && t.status === "DONE").length;
+      const rate = totalTroubleReform > 0 ? ((doneTroubleReform / totalTroubleReform) * 100).toFixed(1) : 100;
+      this.statResolutionRate.textContent = `${rate}%`;
+    }
 
     // Highlight Active KPI Card
     document.querySelectorAll(".kpi-card").forEach(card => {
