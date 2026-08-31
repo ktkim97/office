@@ -292,10 +292,8 @@ a {
   color: #ffffff;
   border-radius: var(--radius-lg);
   padding: 38px 40px;
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 32px;
-  align-items: center;
+  display: block;
+  width: 100%;
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
@@ -315,8 +313,35 @@ a {
 
 .badge-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.badge-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+
+.badge-hero-tag:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
 }
 
 .badge {
@@ -1444,6 +1469,24 @@ a {
   .hero-card {
     padding: 20px 16px;
     border-radius: var(--radius-md);
+    display: block;
+    width: 100%;
+  }
+
+  .badge-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .badge-hero-tag {
+    width: 100%;
+    height: 38px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    justify-content: center;
+    border-radius: var(--radius-full);
   }
 
   .hero-content h2 {

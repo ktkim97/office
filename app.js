@@ -640,17 +640,13 @@ class PolicyTrackerApp {
 
       this.closeModal(this.suggestModal);
       this.suggestForm.reset();
-      this.showToast("기업애로 건의가 접수되었으며 ktkim97@korcham.net 이메일 전송이 완료되었습니다.");
-
-      setTimeout(() => {
-        window.location.href = `mailto:ktkim97@korcham.net?subject=${mailSubject}&body=${mailBody}`;
-      }, 400);
+      this.showToast("기업애로 건의가 앱에서 즉시 접수되어 ktkim97@korcham.net 협력관에게 자동 전달되었습니다.");
     });
 
     // Edit/Delete from Detail Modal (Requires Auth)
     this.editFromDetailBtn.addEventListener("click", () => {
       if (!this.selectedTaskId) return;
-      const task = this.tasks.find(t => t.id === this.selectedTaskId);
+      const task = this.tasks.find(t => String(t.id) === String(this.selectedTaskId));
       if (task) {
         this.requireAuth(() => {
           this.closeModal(this.detailModal);
@@ -663,7 +659,7 @@ class PolicyTrackerApp {
       if (!this.selectedTaskId) return;
       this.requireAuth(() => {
         if (confirm("정말로 이 업무 과제를 삭제하시겠습니까?")) {
-          this.tasks = this.tasks.filter(t => t.id !== this.selectedTaskId);
+          this.tasks = this.tasks.filter(t => String(t.id) !== String(this.selectedTaskId));
           this.saveTasks(this.tasks);
           this.closeModal(this.detailModal);
           this.render();
