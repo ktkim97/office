@@ -57,20 +57,6 @@ module.exports = async (req, res) => {
       }
       const { tasks, suggestions } = bodyData || {};
 
-      // Get current SHA from GitHub API
-      const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
-        headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
-          "Accept": "application/vnd.github.v3+json",
-          "User-Agent": "BusanOfficerApp"
-        }
-      });
-      let currentSha = "";
-      if (getRes.ok) {
-        const getJson = await getRes.json();
-        currentSha = getJson.sha;
-      }
-
       const payload = {
         name: "busan_officer_shared_db",
         data: {
@@ -82,31 +68,49 @@ module.exports = async (req, res) => {
       const jsonStr = JSON.stringify(payload, null, 2);
       const base64Content = Buffer.from(jsonStr, 'utf-8').toString('base64');
 
-      const body = {
-        message: "Update shared database (Realtime Cloud Sync via Vercel API)",
-        content: base64Content,
-        branch: "main"
-      };
-      if (currentSha) body.sha = currentSha;
+      let lastError = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        // Fetch latest SHA from GitHub API
+        const getRes = await fetch(GITHUB_DB_URL + "?t=" + Date.now(), {
+          headers: {
+            "Authorization": "token " + GITHUB_TOKEN,
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "BusanOfficerApp"
+          }
+        });
+        let currentSha = "";
+        if (getRes.ok) {
+          const getJson = await getRes.json();
+          currentSha = getJson.sha;
+        }
 
-      const putRes = await fetch(GITHUB_DB_URL, {
-        method: "PUT",
-        headers: {
-          "Authorization": "token " + GITHUB_TOKEN,
-          "Content-Type": "application/json",
-          "Accept": "application/vnd.github.v3+json",
-          "User-Agent": "BusanOfficerApp"
-        },
-        body: JSON.stringify(body)
-      });
+        const body = {
+          message: "Update shared database (Realtime Cloud Sync via Vercel API)",
+          content: base64Content,
+          branch: "main"
+        };
+        if (currentSha) body.sha = currentSha;
 
-      if (putRes.ok) {
-        const putJson = await putRes.json();
-        return res.status(200).json({ success: true, sha: putJson.content ? putJson.content.sha : currentSha });
-      } else {
-        const errJson = await putRes.json();
-        return res.status(400).json({ error: errJson });
+        const putRes = await fetch(GITHUB_DB_URL, {
+          method: "PUT",
+          headers: {
+            "Authorization": "token " + GITHUB_TOKEN,
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "BusanOfficerApp"
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (putRes.ok) {
+          const putJson = await putRes.json();
+          return res.status(200).json({ success: true, sha: putJson.content ? putJson.content.sha : currentSha });
+        } else {
+          lastError = await putRes.json();
+          await new Promise(r => setTimeout(r, 300));
+        }
       }
+      return res.status(400).json({ error: lastError });
     } catch (e) {
       return res.status(500).json({ error: e.message });
     }
