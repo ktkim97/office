@@ -748,7 +748,20 @@ class PolicyTrackerApp {
         title, role, status, dept, target, summary, detail, effect, date, tags
       };
       this.tasks.unshift(newTask);
-      this.showToast("새로운 업무 과제가 등록되었습니다.");
+      this.showToast("새로운 업무 과제가 성공적으로 등록되었습니다.");
+    }
+
+    // Auto-reset filters so newly added/edited task is guaranteed to be visible at the top!
+    this.currentStatusFilter = "ALL";
+    this.currentRoleFilter = "ALL";
+    this.searchKeyword = "";
+    if (this.searchInput) this.searchInput.value = "";
+    if (this.roleSelect) this.roleSelect.value = "ALL";
+    if (this.clearSearchBtn) this.clearSearchBtn.style.display = "none";
+    if (this.statusTabGroup) {
+      this.statusTabGroup.querySelectorAll(".tab-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.status === "ALL");
+      });
     }
 
     this.saveTasks(this.tasks);
