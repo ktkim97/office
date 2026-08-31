@@ -289,22 +289,20 @@ class PolicyTrackerApp {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.sha !== this.currentSha) {
-          this.currentSha = data.sha;
-          const cloudTasks = data.tasks || [];
-          const cloudSuggestions = data.suggestions || [];
+        const cloudTasks = data.tasks || [];
+        const cloudSuggestions = data.suggestions || [];
 
-          if (Array.isArray(cloudTasks)) {
-            const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
-            if (hasChanged) {
-              this.tasks = cloudTasks;
-              localStorage.setItem("busan_officer_tasks", JSON.stringify(cloudTasks));
-              this.render();
-            }
+        if (Array.isArray(cloudTasks) && cloudTasks.length > 0) {
+          const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
+          if (hasChanged || data.sha !== this.currentSha || this.tasks.length === 0) {
+            this.currentSha = data.sha;
+            this.tasks = cloudTasks;
+            localStorage.setItem("busan_officer_tasks", JSON.stringify(cloudTasks));
+            this.render();
           }
-          this.suggestions = cloudSuggestions;
-          this.updateCloudStatusBadge(true);
         }
+        this.suggestions = cloudSuggestions;
+        this.updateCloudStatusBadge(true);
       }
     } catch (e) {
       console.warn("Cloud DB fetch polling error:", e);
@@ -881,6 +879,7 @@ class PolicyTrackerApp {
         </div>
         <h3 class="task-title">${task.title}</h3>
         <p class="task-summary">${task.summary}</p>
+        ${task.detail ? `<div class="task-detail-box"><i class="fa-solid fa-file-text"></i> <strong>추진 상세내용:</strong><br>${task.detail.replace(/\n/g, '<br>')}</div>` : ''}
       </div>
 
       <div>
@@ -893,6 +892,11 @@ class PolicyTrackerApp {
           <div class="task-meta-item">
             <i class="fa-solid fa-bullseye"></i>
             <span>${task.target}</span>
+          </div>` : ''}
+          ${task.effect ? `
+          <div class="task-meta-item task-effect-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span><strong>기대효과:</strong> ${task.effect}</span>
           </div>` : ''}
         </div>
 
