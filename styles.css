@@ -4,58 +4,60 @@
    ========================================================================== */
 
 :root {
-  /* Busan 9th Term Ocean Marine Palette */
+  /* Busan 9th Term Ocean Marine Palette (Rich & Visually Comfortable) */
   --color-primary: #004b87;         /* Busan Marine Navy (대표 시그니처) */
-  --color-primary-dark: #003366;    /* Deep Ocean Blue */
+  --color-primary-dark: #0b4379;    /* Deep Ocean Blue */
   --color-primary-light: #0284c7;   /* Bright Marine Blue (Sky 600) */
   --color-primary-soft: #e0f2fe;    /* Light Cyan/Sky Blue Tint */
 
   --color-accent: #0284c7;          /* Sky Blue Accent */
   --color-accent-hover: #0369a1;    /* Deep Accent Hover */
-  --color-accent-soft: rgba(2, 132, 199, 0.1);
+  --color-accent-soft: rgba(2, 132, 199, 0.08);
   --color-accent-glow: rgba(14, 165, 233, 0.35);
 
-  --color-suggest-cta: #0284c7;
-  --color-suggest-hover: #0369a1;
-  
+  --color-warm-cta: #f59e0b;        /* Warm Gold Accent for CTA */
+  --color-warm-cta-hover: #d97706;  /* Warm Gold Hover */
+  --grad-warm-cta: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  --shadow-cta-glow: 0 4px 16px rgba(245, 158, 11, 0.35);
+
   --color-success: #0d9488;
-  --color-success-bg: rgba(13, 148, 136, 0.1);
+  --color-success-bg: rgba(13, 148, 136, 0.08);
   --color-warning: #f59e0b;
-  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-bg: rgba(245, 158, 11, 0.08);
   --color-info: #0284c7;
-  --color-info-bg: rgba(2, 132, 199, 0.1);
+  --color-info-bg: rgba(2, 132, 199, 0.08);
   
-  /* Lighter, Clean & Refreshing Backgrounds (답답한 어두운 검정색 제거) */
-  --color-bg-main: #f0f6fa;         /* 맑은 바다빛 톤의 소프트 라이트 배경 */
-  --color-bg-subtle: #f8fafc;
+  /* Visually Soft & Eye-Friendly Backgrounds (눈이 편안한 슬레이트 톤) */
+  --color-bg-main: #f8fafc;         /* 눈이 피로하지 않은 슬레이트 웜 라이트 배경 */
+  --color-bg-subtle: #f1f5f9;
   --color-card: #ffffff;
-  --color-border: #dbeafe;          /* Soft Sky Border */
-  --color-border-subtle: #e2e8f0;
+  --color-border: #e2e8f0;          /* Soft Slate Border */
+  --color-border-subtle: #f1f5f9;
   
   /* High-Contrast Typography for Maximum Mobile Legibility */
-  --color-text-main: #0f172a;       /* Slate 900 - 최고 선명도의 블랙/다크네이비 */
-  --color-text-muted: #334155;      /* Slate 700 - 명확한 보조 텍스트 */
+  --color-text-main: #0f172a;       /* Slate 900 - 선명한 다크 슬레이트 메인 글자 */
+  --color-text-muted: #334155;      /* Slate 700 - 가독성 우수한 본문 글자 */
   --color-text-light: #64748b;      /* Slate 500 - 캡션/날짜 */
   
-  /* 4대 주요 역할 카테고리 컬러 */
-  --cat-trouble: #e11d48;           /* 1. 기업애로 발굴 및 해결 (Rose/Red) */
-  --cat-trouble-bg: #ffe4e6;
-  --cat-reform: #7c3aed;            /* 2. 제도개선 및 시책건의 (Violet) */
-  --cat-reform-bg: #ede9fe;
-  --cat-policy: #059669;            /* 3. 기업정책 발굴 (Emerald) */
-  --cat-policy-bg: #d1fae5;
-  --cat-coop: #0284c7;              /* 4. 민관협력 (Ocean Blue) */
-  --cat-coop-bg: #e0f2fe;
+  /* 4대 주요 역할 카테고리 시그니처 테마 컬러 */
+  --cat-trouble: #ef4444;           /* 1. 기업애로 발굴 및 해결 (Warm Rose/Red) */
+  --cat-trouble-bg: #fef2f2;
+  --cat-reform: #10b981;            /* 2. 제도개선 및 시책건의 (Emerald Teal) */
+  --cat-reform-bg: #ecfdf5;
+  --cat-policy: #f59e0b;            /* 3. 기업정책 발굴 (Amber Gold) */
+  --cat-policy-bg: #fffbeb;
+  --cat-coop: #6366f1;              /* 4. 민관협력 (Indigo Violet) */
+  --cat-coop-bg: #eef2ff;
 
-  /* Shadows & Radius */
-  --shadow-sm: 0 1px 3px rgba(0, 75, 135, 0.06);
-  --shadow-md: 0 4px 14px rgba(0, 75, 135, 0.08);
-  --shadow-lg: 0 12px 28px rgba(0, 75, 135, 0.12);
-  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.4);
+  /* Premium Glass & Soft Dual Shadows */
+  --shadow-sm: 0 2px 5px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 6px 18px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 14px 32px -4px rgba(15, 23, 42, 0.09);
+  --shadow-glow: 0 0 24px rgba(13, 148, 136, 0.35);
 
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
   --transition-fast: all 0.2s ease;
@@ -254,14 +256,14 @@ a {
 }
 
 .btn-suggest-header {
-  background-color: #ffffff;
-  color: #004b87;
+  background: var(--grad-warm-cta);
+  color: #ffffff;
   font-size: 0.92rem;
   font-weight: 800;
   padding: 10px 20px;
   border-radius: var(--radius-full);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-cta-glow);
   transition: var(--transition-normal);
   display: inline-flex;
   align-items: center;
@@ -269,15 +271,13 @@ a {
 }
 
 .btn-suggest-header i {
-  color: #0284c7;
+  color: #ffffff;
   font-size: 1rem;
 }
 
 .btn-suggest-header:hover {
-  background-color: #f0f7fc;
-  color: #003366;
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.45);
 }
 
 /* ==========================================================================
@@ -288,7 +288,7 @@ a {
 }
 
 .hero-card {
-  background: linear-gradient(135deg, #004b87 0%, #006bb8 55%, #0284c7 100%);
+  background: linear-gradient(135deg, #0b4379 0%, #004b87 50%, #0d9488 100%);
   color: #ffffff;
   border-radius: var(--radius-lg);
   padding: 38px 40px;
@@ -297,7 +297,7 @@ a {
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .hero-card::after {
@@ -307,7 +307,7 @@ a {
   right: -20%;
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(0, 0, 0, 0) 70%);
   pointer-events: none;
 }
 
@@ -394,13 +394,13 @@ a {
 }
 
 .btn-hero-suggest {
-  background-color: #ffffff;
-  color: #004b87;
+  background: var(--grad-warm-cta);
+  color: #ffffff;
   font-size: 1.05rem;
   font-weight: 800;
-  padding: 12px 24px;
+  padding: 13px 26px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-cta-glow);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -412,14 +412,14 @@ a {
 }
 
 .btn-hero-suggest i.fa-paper-plane {
-  color: #0284c7;
+  color: #ffffff;
 }
 
 .btn-hero-suggest:hover {
-  background-color: #f0f7fc;
-  color: #003366;
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 8px 26px rgba(245, 158, 11, 0.5);
 }
 
 .hero-cta-sub {
@@ -584,10 +584,14 @@ a {
   overflow: hidden;
 }
 
+.kpi-card[data-role-filter="TROUBLE"] { border-top: 4px solid var(--cat-trouble); }
+.kpi-card[data-role-filter="REFORM"] { border-top: 4px solid var(--cat-reform); }
+.kpi-card[data-role-filter="POLICY"] { border-top: 4px solid var(--cat-policy); }
+.kpi-card[data-role-filter="COOPERATION"] { border-top: 4px solid var(--cat-coop); }
+
 .kpi-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
-  border-color: #0284c7;
 }
 
 .kpi-card.active-filter {
@@ -595,6 +599,11 @@ a {
   background-color: #f0f9ff;
   box-shadow: 0 0 0 2px #0284c7;
 }
+
+.kpi-card[data-role-filter="TROUBLE"].active-filter { border-color: var(--cat-trouble); background-color: var(--cat-trouble-bg); box-shadow: 0 0 0 2px var(--cat-trouble); }
+.kpi-card[data-role-filter="REFORM"].active-filter { border-color: var(--cat-reform); background-color: var(--cat-reform-bg); box-shadow: 0 0 0 2px var(--cat-reform); }
+.kpi-card[data-role-filter="POLICY"].active-filter { border-color: var(--cat-policy); background-color: var(--cat-policy-bg); box-shadow: 0 0 0 2px var(--cat-policy); }
+.kpi-card[data-role-filter="COOPERATION"].active-filter { border-color: var(--cat-coop); background-color: var(--cat-coop-bg); box-shadow: 0 0 0 2px var(--cat-coop); }
 
 .kpi-icon {
   width: 48px;
