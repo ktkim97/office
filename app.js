@@ -6,19 +6,6 @@
 // Initial Seed Data ( 기업정책협력관의 4대 주요 역할 관련 실제 과제 )
 const INITIAL_TASKS = [
   {
-    id: "task-1788153242316",
-    title: "부산독립운동기념관 내 기업가존(zone) 설치",
-    role: "COOPERATION",
-    status: "IN_PROGRESS",
-    dept: "부산시 총무과 & 부산상공회의소",
-    target: "지역 기업 및 시민",
-    summary: "수난사와 무장투쟁 위주의 전시를 넘어, 민족 자본형성과 기업가정신을 독립운동의 일부로 재조명",
-    detail: "부산시민공원 내 부산독립운동기념관('27.7.개관) 내 일제강점기 부산을 기반으로 민족자본을 지켜낸 기업가들의 사료, 유품 전시 및 상공인 헌정의 벽 등 조성",
-    effect: "지역기업의 역사적 뿌리 재확인, 애국심과 도전적 기업가정신 전달 등",
-    date: "2026-08-31",
-    tags: ["부산독립운동기념관", "기업가ZONE", "상공인헌정", "민관협력"]
-  },
-  {
     id: "task-1787638571857",
     title: "공유수면 점사용료 부과징수권 제도 개선",
     role: "REFORM",
@@ -91,11 +78,11 @@ class PolicyTrackerApp {
     this.updateAdminUI();
     this.render();
 
-    // Start Realtime Cloud Sync (Polls every 2.5s to keep all devices in sync)
+    // Start Realtime Cloud Sync (Polls every 2.0s to keep all devices in sync)
     this.initCloudSync();
   }
 
-  // Load Tasks from LocalStorage or initialize with Seed Data
+  // Load Tasks from LocalStorage or return memory fallback
   loadTasks() {
     const saved = localStorage.getItem("busan_officer_tasks");
     if (saved) {
@@ -108,7 +95,7 @@ class PolicyTrackerApp {
         console.error("Failed to parse stored tasks, restoring defaults.", e);
       }
     }
-    this.saveTasks(INITIAL_TASKS);
+    // Memory fallback ONLY. NEVER push initial seeds to cloud DB on client load!
     return INITIAL_TASKS;
   }
 
@@ -130,7 +117,7 @@ class PolicyTrackerApp {
       });
       if (res.ok) {
         const data = await res.json();
-        const cloudTasks = data.tasks || [];
+        const cloudTasks = data.tasks;
         const cloudSuggestions = data.suggestions || [];
 
         // Unified Admin Password sync across all devices
@@ -139,9 +126,9 @@ class PolicyTrackerApp {
           localStorage.setItem("busan_admin_pw", data.adminPassword);
         }
 
-        if (Array.isArray(cloudTasks) && cloudTasks.length > 0) {
+        if (Array.isArray(cloudTasks)) {
           const hasChanged = JSON.stringify(this.tasks) !== JSON.stringify(cloudTasks);
-          if (hasChanged || data.sha !== this.currentSha || this.tasks.length === 0) {
+          if (hasChanged || data.sha !== this.currentSha) {
             this.currentSha = data.sha;
             this.tasks = cloudTasks;
             localStorage.setItem("busan_officer_tasks", JSON.stringify(cloudTasks));
