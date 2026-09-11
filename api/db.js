@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         return res.status(200).json({
           sha: data.sha,
           adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
-          visitCount: parsed.data ? (parsed.data.visitCount || 1284) : 1284,
+          visitCount: parsed.data ? (parsed.data.visitCount || 50) : 50,
           tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
           suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
         });
@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
           const parsed = await rawRes.json();
           return res.status(200).json({
             adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
-            visitCount: parsed.data ? (parsed.data.visitCount || 1284) : 1284,
+            visitCount: parsed.data ? (parsed.data.visitCount || 50) : 50,
             tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
             suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
           });
@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
         let existingPassword = "busan123";
         let existingTasks = [];
         let existingSuggestions = [];
-        let currentVisitCount = 1284;
+        let currentVisitCount = 50;
 
         if (getRes.ok) {
           const getJson = await getRes.json();
