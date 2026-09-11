@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
         return res.status(200).json({
           sha: data.sha,
           adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
+          visitCount: parsed.data ? (parsed.data.visitCount || 1284) : 1284,
           tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
           suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
         });
@@ -40,6 +41,7 @@ module.exports = async (req, res) => {
           const parsed = await rawRes.json();
           return res.status(200).json({
             adminPassword: parsed.data ? (parsed.data.adminPassword || "busan123") : "busan123",
+            visitCount: parsed.data ? (parsed.data.visitCount || 1284) : 1284,
             tasks: parsed.data ? parsed.data.tasks : (parsed.tasks || []),
             suggestions: parsed.data ? parsed.data.suggestions : (parsed.suggestions || [])
           });
@@ -57,7 +59,7 @@ module.exports = async (req, res) => {
       if (typeof bodyData === "string") {
         bodyData = JSON.parse(bodyData);
       }
-      const { tasks, suggestions, adminPassword } = bodyData || {};
+      const { tasks, suggestions, adminPassword, incrementVisit } = bodyData || {};
 
       let lastError = null;
       for (let attempt = 0; attempt < 3; attempt++) {
@@ -71,6 +73,10 @@ module.exports = async (req, res) => {
         });
         let currentSha = "";
         let existingPassword = "busan123";
+        let existingTasks = [];
+        let existingSuggestions = [];
+        let currentVisitCount = 1284;
+
         if (getRes.ok) {
           const getJson = await getRes.json();
           currentSha = getJson.sha;
@@ -78,18 +84,24 @@ module.exports = async (req, res) => {
             const cleanB64 = getJson.content.replace(/[^A-Za-z0-9+/=]/g, '');
             const jsonStr = Buffer.from(cleanB64, 'base64').toString('utf-8');
             const parsed = JSON.parse(jsonStr);
-            if (parsed.data && parsed.data.adminPassword) {
-              existingPassword = parsed.data.adminPassword;
+            if (parsed.data) {
+              if (parsed.data.adminPassword) existingPassword = parsed.data.adminPassword;
+              if (parsed.data.tasks) existingTasks = parsed.data.tasks;
+              if (parsed.data.suggestions) existingSuggestions = parsed.data.suggestions;
+              if (parsed.data.visitCount) currentVisitCount = parsed.data.visitCount;
             }
           } catch (e) {}
         }
+
+        const finalVisitCount = incrementVisit ? (currentVisitCount + 1) : currentVisitCount;
 
         const payload = {
           name: "busan_officer_shared_db",
           data: {
             adminPassword: adminPassword || existingPassword,
-            tasks: tasks || [],
-            suggestions: suggestions || []
+            visitCount: finalVisitCount,
+            tasks: tasks || existingTasks,
+            suggestions: suggestions || existingSuggestions
           }
         };
 
@@ -97,7 +109,7 @@ module.exports = async (req, res) => {
         const base64Content = Buffer.from(jsonStr, 'utf-8').toString('base64');
 
         const body = {
-          message: "Update shared database (Realtime Cloud Sync via Vercel API)",
+          message: incrementVisit ? `Increment visit count to ${finalVisitCount}` : "Update shared database (Realtime Cloud Sync via Vercel API)",
           content: base64Content,
           branch: "main"
         };
@@ -116,7 +128,7 @@ module.exports = async (req, res) => {
 
         if (putRes.ok) {
           const putJson = await putRes.json();
-          return res.status(200).json({ success: true, sha: putJson.content ? putJson.content.sha : currentSha });
+          return res.status(200).json({ success: true, visitCount: finalVisitCount, sha: putJson.content ? putJson.content.sha : currentSha });
         } else {
           lastError = await putRes.json();
           await new Promise(r => setTimeout(r, 300));

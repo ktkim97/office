@@ -105,9 +105,39 @@ class PolicyTrackerApp {
   }
 
   async initCloudSync() {
+    // Check if session visit is already counted for this session
+    if (!sessionStorage.getItem("busan_app_visited")) {
+      sessionStorage.setItem("busan_app_visited", "true");
+      this.incrementVisitCount();
+    }
     await this.fetchFromCloud();
     // Poll Cloud DB every 2 seconds so changes on PC appear on mobile in real-time
     setInterval(() => this.fetchFromCloud(), 2000);
+  }
+
+  async incrementVisitCount() {
+    try {
+      const res = await fetch("/api/db", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ incrementVisit: true })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.visitCount) {
+          this.updateVisitCountUI(data.visitCount);
+        }
+      }
+    } catch (e) {
+      console.warn("Increment visit count error:", e);
+    }
+  }
+
+  updateVisitCountUI(count) {
+    const el = document.getElementById("globalVisitCount");
+    if (el && count) {
+      el.textContent = Number(count).toLocaleString();
+    }
   }
 
   async fetchFromCloud() {
@@ -124,6 +154,11 @@ class PolicyTrackerApp {
         if (data.adminPassword && data.adminPassword !== this.adminPassword) {
           this.adminPassword = data.adminPassword;
           localStorage.setItem("busan_admin_pw", data.adminPassword);
+        }
+
+        // Global Visit Count UI sync
+        if (data.visitCount) {
+          this.updateVisitCountUI(data.visitCount);
         }
 
         if (Array.isArray(cloudTasks)) {
