@@ -63,9 +63,9 @@ class PolicyTrackerApp {
     this.tasks = this.loadTasks();
     this.suggestions = [];
     this.currentSha = "";
-    this.adminPassword = localStorage.getItem("busan_admin_pw") || "busan123";
-    this.isAuthenticated = false; // Admin login state for current session
-    this.pendingAction = null;     // Action callback to execute after successful auth
+    this.currentAdminPassword = null; // Stored in session memory only upon successful server verification
+    this.isAuthenticated = false;     // Admin login state for current session
+    this.pendingAction = null;        // Action callback to execute after successful auth
 
     this.currentStatusFilter = "ALL"; // ALL, DONE, IN_PROGRESS, PLANNED
     this.currentRoleFilter = "ALL";   // ALL, TROUBLE, REFORM, POLICY, COOPERATION
@@ -101,7 +101,7 @@ class PolicyTrackerApp {
 
   saveTasks(tasks) {
     localStorage.setItem("busan_officer_tasks", JSON.stringify(tasks));
-    this.syncToCloud(tasks, this.suggestions);
+    this.syncToCloud(tasks);
   }
 
   async initCloudSync() {
@@ -148,13 +148,6 @@ class PolicyTrackerApp {
       if (res.ok) {
         const data = await res.json();
         const cloudTasks = data.tasks;
-        const cloudSuggestions = data.suggestions || [];
-
-        // Unified Admin Password sync across all devices
-        if (data.adminPassword && data.adminPassword !== this.adminPassword) {
-          this.adminPassword = data.adminPassword;
-          localStorage.setItem("busan_admin_pw", data.adminPassword);
-        }
 
         // Global Visit Count UI sync
         if (data.visitCount) {
@@ -170,7 +163,12 @@ class PolicyTrackerApp {
             this.render();
           }
         }
-        this.suggestions = cloudSuggestions;
+
+        // If admin is authenticated, periodically refresh suggestions
+        if (this.isAuthenticated && this.currentAdminPassword) {
+          this.refreshSuggestions();
+        }
+
         this.updateCloudStatusBadge(true);
       }
     } catch (e) {
@@ -179,7 +177,34 @@ class PolicyTrackerApp {
     }
   }
 
-  async syncToCloud(tasks, suggestions = [], adminPassword = null) {
+  async refreshSuggestions() {
+    if (!this.isAuthenticated || !this.currentAdminPassword) return;
+    try {
+      const res = await fetch("/api/db", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getSuggestions",
+          password: this.currentAdminPassword
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.suggestions) {
+          this.suggestions = data.suggestions;
+          this.updateAdminUI();
+        }
+      }
+    } catch (e) {
+      console.warn("Refresh suggestions error:", e);
+    }
+  }
+
+  async syncToCloud(tasks) {
+    if (!this.currentAdminPassword) {
+      console.warn("syncToCloud blocked: Admin authentication required");
+      return;
+    }
     try {
       const res = await fetch("/api/db", {
         method: "POST",
@@ -187,9 +212,9 @@ class PolicyTrackerApp {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          tasks: tasks,
-          suggestions: suggestions,
-          adminPassword: adminPassword || this.adminPassword
+          action: "saveTasks",
+          password: this.currentAdminPassword,
+          tasks: tasks
         })
       });
 
@@ -256,16 +281,19 @@ class PolicyTrackerApp {
 
     // Buttons & Modals
     this.openRegisterBtn = document.getElementById("openRegisterBtn");
+    this.openSuggestionsListBtn = document.getElementById("openSuggestionsListBtn");
     this.openSuggestBtn = document.getElementById("openSuggestBtn");
     this.openSuggestBtnBottom = document.getElementById("openSuggestBtnBottom");
     this.openAdminSettingsBtn = document.getElementById("openAdminSettingsBtn");
     this.adminStatusText = document.getElementById("adminStatusText");
+    this.adminSugBadge = document.getElementById("adminSugBadge");
 
     this.detailModal = document.getElementById("detailModal");
     this.taskFormModal = document.getElementById("taskFormModal");
     this.suggestModal = document.getElementById("suggestModal");
     this.authModal = document.getElementById("authModal");
     this.changePwModal = document.getElementById("changePwModal");
+    this.suggestionsModal = document.getElementById("suggestionsModal");
 
     this.closeFormModalBtn = document.getElementById("closeFormModalBtn");
     this.cancelFormBtn = document.getElementById("cancelFormBtn");
@@ -274,6 +302,11 @@ class PolicyTrackerApp {
     this.closeSuggestModalBtn = document.getElementById("closeSuggestModalBtn");
     this.cancelSuggestBtn = document.getElementById("cancelSuggestBtn");
     this.suggestForm = document.getElementById("suggestForm");
+
+    this.closeSuggestionsModalBtn = document.getElementById("closeSuggestionsModalBtn");
+    this.closeSuggestionsModalBtnBottom = document.getElementById("closeSuggestionsModalBtnBottom");
+    this.suggestionsListContainer = document.getElementById("suggestionsListContainer");
+    this.suggestionsCount = document.getElementById("suggestionsCount");
 
     this.closeAuthModalBtn = document.getElementById("closeAuthModalBtn");
     this.cancelAuthBtn = document.getElementById("cancelAuthBtn");
@@ -297,10 +330,19 @@ class PolicyTrackerApp {
       this.openAdminSettingsBtn.classList.remove("btn-dark-outline");
       this.openAdminSettingsBtn.classList.add("btn-light-glow");
       this.adminStatusText.innerHTML = '<i class="fa-solid fa-user-check"></i> 비밀번호 변경';
+      if (this.adminSugBadge) {
+        this.adminSugBadge.textContent = this.suggestions ? this.suggestions.length : 0;
+      }
+      if (this.openSuggestionsListBtn) {
+        this.openSuggestionsListBtn.style.display = "inline-flex";
+      }
     } else {
       this.openAdminSettingsBtn.classList.remove("btn-light-glow");
       this.openAdminSettingsBtn.classList.add("btn-dark-outline");
       this.adminStatusText.innerHTML = '비밀번호 설정';
+      if (this.adminSugBadge) {
+        this.adminSugBadge.textContent = '0';
+      }
     }
   }
 
@@ -389,6 +431,13 @@ class PolicyTrackerApp {
       this.requireAuth(() => this.openTaskFormModal());
     });
 
+    // Modal Control: Open Suggestions Inbox (Requires Auth)
+    if (this.openSuggestionsListBtn) {
+      this.openSuggestionsListBtn.addEventListener("click", () => {
+        this.requireAuth(() => this.openSuggestionsModal());
+      });
+    }
+
     // Admin Settings / Change Password Button
     this.openAdminSettingsBtn.addEventListener("click", () => {
       if (this.isAuthenticated) {
@@ -421,45 +470,67 @@ class PolicyTrackerApp {
     this.cancelAuthBtn.addEventListener("click", () => this.closeModal(this.authModal));
     this.closeChangePwModalBtn.addEventListener("click", () => this.closeModal(this.changePwModal));
     this.cancelChangePwBtn.addEventListener("click", () => this.closeModal(this.changePwModal));
+    if (this.closeSuggestionsModalBtn) {
+      this.closeSuggestionsModalBtn.addEventListener("click", () => this.closeModal(this.suggestionsModal));
+    }
+    if (this.closeSuggestionsModalBtnBottom) {
+      this.closeSuggestionsModalBtnBottom.addEventListener("click", () => this.closeModal(this.suggestionsModal));
+    }
 
     // Backdrop Click Close
-    [this.detailModal, this.taskFormModal, this.suggestModal, this.authModal, this.changePwModal].forEach(modal => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) this.closeModal(modal);
-      });
-    });
-
-    // Auth Form Verification Submit
-    this.authForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const inputPw = this.authPassword.value;
-      if (inputPw === this.adminPassword) {
-        this.isAuthenticated = true;
-        this.authErrorMsg.style.display = "none";
-        this.closeModal(this.authModal);
-        this.updateAdminUI();
-        this.showToast("담당자 관리자 인증되었습니다.");
-        if (this.pendingAction) {
-          const action = this.pendingAction;
-          this.pendingAction = null;
-          action();
-        }
-      } else {
-        this.authErrorMsg.style.display = "block";
+    [this.detailModal, this.taskFormModal, this.suggestModal, this.authModal, this.changePwModal, this.suggestionsModal].forEach(modal => {
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) this.closeModal(modal);
+        });
       }
     });
 
-    // Change Password Form Submit
-    this.changePwForm.addEventListener("submit", (e) => {
+    // Auth Form Verification Submit (Server-side Authentication)
+    this.authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const inputPw = this.authPassword.value.trim();
+      const submitBtn = this.authForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "verifyAuth", password: inputPw })
+        });
+        const data = await res.json();
+        if (res.ok && data.authenticated) {
+          this.isAuthenticated = true;
+          this.currentAdminPassword = inputPw;
+          this.suggestions = data.suggestions || [];
+          this.authErrorMsg.style.display = "none";
+          this.closeModal(this.authModal);
+          this.updateAdminUI();
+          this.showToast("담당자 관리자 인증되었습니다.");
+          if (this.pendingAction) {
+            const action = this.pendingAction;
+            this.pendingAction = null;
+            action();
+          }
+        } else {
+          this.authErrorMsg.style.display = "block";
+        }
+      } catch (err) {
+        console.error("Auth verification error:", err);
+        alert("인증 처리 중 네트워크 오류가 발생했습니다.");
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+
+    // Change Password Form Submit (Server-side Secure Change)
+    this.changePwForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const currPw = document.getElementById("currentPwInput").value;
       const newPw = document.getElementById("newPwInput").value;
       const confirmPw = document.getElementById("confirmPwInput").value;
 
-      if (currPw !== this.adminPassword) {
-        alert("현재 비밀번호가 일치하지 않습니다.");
-        return;
-      }
       if (newPw !== confirmPw) {
         alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         return;
@@ -469,12 +540,34 @@ class PolicyTrackerApp {
         return;
       }
 
-      this.adminPassword = newPw;
-      localStorage.setItem("busan_admin_pw", newPw);
-      this.syncToCloud(this.tasks, this.suggestions, newPw);
-      this.changePwForm.reset();
-      this.closeModal(this.changePwModal);
-      this.showToast("관리자 비밀번호가 변경되어 모든 기기(PC/핸드폰)에 실시간 통합 적용되었습니다.");
+      const submitBtn = this.changePwForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "changePassword",
+            password: currPw,
+            newPassword: newPw
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.currentAdminPassword = newPw;
+          this.changePwForm.reset();
+          this.closeModal(this.changePwModal);
+          this.showToast("관리자 비밀번호가 안전하게 변경되었습니다.");
+        } else {
+          alert(data.error || "현재 비밀번호가 일치하지 않습니다.");
+        }
+      } catch (err) {
+        console.error("Change password error:", err);
+        alert("비밀번호 변경 처리 중 오류가 발생했습니다.");
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
 
     // Form Submit: Task Save/Update
@@ -483,43 +576,62 @@ class PolicyTrackerApp {
       this.saveTaskFromForm();
     });
 
-    // Form Submit: Suggestion (자동 이메일 ktkim97@korcham.net 전송 & DB 저장)
-    this.suggestForm.addEventListener("submit", (e) => {
+    // Form Submit: Suggestion (개인정보 동의 확인 & 서버 안전 등록)
+    this.suggestForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const company = document.getElementById("suggestCompany") ? document.getElementById("suggestCompany").value || "미입력" : "미입력";
-      const contact = document.getElementById("suggestContact") ? document.getElementById("suggestContact").value || "미입력" : "미입력";
-      const phone = document.getElementById("suggestPhone") ? document.getElementById("suggestPhone").value || "미입력" : "미입력";
-      const email = document.getElementById("suggestEmail") ? document.getElementById("suggestEmail").value || "미입력" : "미입력";
-      const role = document.getElementById("suggestRole") ? document.getElementById("suggestRole").value || "기타" : "기타";
-      const title = document.getElementById("suggestTitle") ? document.getElementById("suggestTitle").value || "내용 없음" : "내용 없음";
-      const content = document.getElementById("suggestContent") ? document.getElementById("suggestContent").value || "" : "";
+
+      // 개인정보 수집 및 이용 동의 필수 체크 검증
+      const consentCheck = document.getElementById("privacyConsentCheck");
+      if (!consentCheck || !consentCheck.checked) {
+        alert("개인정보 수집 및 이용에 동의하셔야 기업애로 건의 접수가 가능합니다.");
+        if (consentCheck) consentCheck.focus();
+        return;
+      }
+
+      const company = document.getElementById("sugCompanyName") ? document.getElementById("sugCompanyName").value.trim() : "";
+      const contact = document.getElementById("sugContact") ? document.getElementById("sugContact").value.trim() : "";
+      const role = document.getElementById("sugCategory") ? document.getElementById("sugCategory").value : "애로해소";
+      const title = document.getElementById("sugTitle") ? document.getElementById("sugTitle").value.trim() : "";
+      const content = document.getElementById("sugContent") ? document.getElementById("sugContent").value.trim() : "";
 
       const newSuggestion = {
         id: "sug-" + Date.now(),
-        company, contact, phone, email, role, title, content,
+        company,
+        contact,
+        role,
+        title,
+        content,
+        consentDate: new Date().toISOString(),
         date: new Date().toISOString().split("T")[0]
       };
 
-      this.suggestions.push(newSuggestion);
-      this.syncToCloud(this.tasks, this.suggestions);
+      const submitBtn = this.suggestForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
 
-      // Mailto link for ktkim97@korcham.net
-      const mailSubject = encodeURIComponent(`[기업애로/아이디어 건의] ${title} (${company})`);
-      const mailBody = encodeURIComponent(
-        `■ 접수 기업/단체명: ${company}\n` +
-        `■ 담당자/직함: ${contact}\n` +
-        `■ 연락처: ${phone}\n` +
-        `■ 이메일: ${email}\n` +
-        `■ 건의 분야: ${role}\n` +
-        `■ 건의 제목: ${title}\n\n` +
-        `■ 건의 내용:\n${content}\n\n` +
-        `----------------------------------------\n` +
-        `부산광역시 ✕ 부산상공회의소 기업정책협력관 직통 시스템`
-      );
+      try {
+        await fetch("/api/db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "addSuggestion",
+            suggestion: newSuggestion
+          })
+        });
+
+        // If admin is currently logged in, add to memory list
+        if (this.isAuthenticated) {
+          this.suggestions.push(newSuggestion);
+          this.updateAdminUI();
+        }
+      } catch (err) {
+        console.warn("Suggestion submission error:", err);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
 
       this.closeModal(this.suggestModal);
       this.suggestForm.reset();
-      this.showToast("기업애로 건의가 담당 기업정책협력관(ktkim97@korcham.net, sosunny@korea.kr)에게 자동 발송 및 접수되었습니다.");
+      this.showToast("기업애로 건의가 담당 기업정책협력관(ktkim97@korcham.net, sosunny@korea.kr)에게 안전하게 접수되었습니다.");
     });
 
     // Edit/Delete from Detail Modal (Requires Auth)
@@ -563,6 +675,47 @@ class PolicyTrackerApp {
     setTimeout(() => {
       this.toastContainer.classList.remove("show");
     }, 3200);
+  }
+
+  // Open Suggestions Inbox Modal (Admin Only)
+  openSuggestionsModal() {
+    this.renderSuggestionsList();
+    this.openModal(this.suggestionsModal);
+  }
+
+  // Render Suggestions in Admin Modal
+  renderSuggestionsList() {
+    if (!this.suggestionsListContainer) return;
+    const list = this.suggestions || [];
+    if (this.suggestionsCount) this.suggestionsCount.textContent = list.length;
+    if (this.adminSugBadge) this.adminSugBadge.textContent = list.length;
+
+    if (list.length === 0) {
+      this.suggestionsListContainer.innerHTML = `
+        <div class="sug-empty-box">
+          <i class="fa-regular fa-folder-open"></i>
+          <p>현재 접수된 기업 건의사항이 없습니다.</p>
+        </div>
+      `;
+      return;
+    }
+
+    this.suggestionsListContainer.innerHTML = list.slice().reverse().map(s => `
+      <div class="sug-card">
+        <div class="sug-card-header">
+          <div class="sug-card-meta">
+            <span class="sug-category-badge">${s.role || '애로해소'}</span>
+            <span class="sug-card-date"><i class="fa-regular fa-clock"></i> ${s.date || ''}</span>
+          </div>
+        </div>
+        <h4 class="sug-card-title">${s.title || '제목 없음'}</h4>
+        <div class="sug-card-company">
+          <span><i class="fa-solid fa-building"></i> <strong>기업/단체:</strong> ${s.company || '미입력'}</span>
+          <span><i class="fa-solid fa-address-book"></i> <strong>연락처/이메일:</strong> ${s.contact || '미입력'}</span>
+        </div>
+        <div class="sug-card-content">${s.content || ''}</div>
+      </div>
+    `).join('');
   }
 
   // Open Form Modal (Create or Edit)

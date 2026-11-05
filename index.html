@@ -293,6 +293,9 @@
           <button id="openRegisterBtn" class="btn btn-admin-primary">
             <i class="fa-solid fa-plus"></i> 업무/실적 신규 등록
           </button>
+          <button id="openSuggestionsListBtn" class="btn btn-admin-accent" title="접수된 기업애로 및 건의사항 목록 확인">
+            <i class="fa-solid fa-inbox"></i> 접수 건의함 <span id="adminSugBadge" class="admin-badge-count">0</span>
+          </button>
           <button id="openAdminSettingsBtn" class="btn btn-admin-secondary" title="관리자 비밀번호 설정">
             <i class="fa-solid fa-lock"></i> <span id="adminStatusText">비밀번호 설정</span>
           </button>
@@ -461,6 +464,28 @@
           <textarea id="sugContent" class="form-control" rows="4" placeholder="현재 겪고 있는 어려움이나 제안하고 싶은 정책 아이디어를 자유롭게 작성해 주세요." required></textarea>
         </div>
 
+        <!-- 개인정보 수집 및 이용 동의 (법적 필수 요건) -->
+        <div class="privacy-consent-box">
+          <div class="privacy-consent-header">
+            <i class="fa-solid fa-shield-halved"></i> <strong>개인정보 수집 및 이용 동의</strong>
+          </div>
+          <div class="privacy-consent-content">
+            <p>부산광역시 ✕ 부산상공회의소 기업정책협력관실은 기업애로 및 시책 제안 접수 처리를 위하여 아래와 같이 개인정보를 수집·이용합니다.</p>
+            <ul>
+              <li><strong>수집 항목</strong>: 기업명/단체명, 담당자 연락처, 이메일</li>
+              <li><strong>수집 및 이용 목적</strong>: 접수된 애로사항 검토, 사실 확인, 처리 결과 회신 및 유관기관 협의</li>
+              <li><strong>보유 및 이용 기간</strong>: <strong>접수일로부터 3년간</strong> 보관 후 지체 없이 파기 (단, 관계 법령에 따름)</li>
+              <li><strong>동의 거부 권리</strong>: 정보주체는 개인정보 수집·이용 동의를 거부할 권리가 있으며, 동의 거부 시 애로사항 접수 및 피드백 회신이 제한됩니다.</li>
+            </ul>
+          </div>
+          <div class="privacy-checkbox-wrapper">
+            <label class="privacy-checkbox-label">
+              <input type="checkbox" id="privacyConsentCheck" required>
+              <span>위 개인정보 수집 및 이용 내용에 동의합니다. <strong style="color: #ef4444;">(필수)</strong></span>
+            </label>
+          </div>
+        </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" id="cancelSuggestBtn">취소</button>
           <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> 건의 접수하기</button>
@@ -520,6 +545,30 @@
           <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> 비밀번호 변경 저장</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal 6: Admin Suggestions View Modal (관리자 전용 건의 목록) -->
+  <div class="modal-backdrop" id="suggestionsModal">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="badge" style="background-color: #0284c7; color:#fff;"><i class="fa-solid fa-lock"></i> 관리자 전용</span>
+          <h3><i class="fa-solid fa-inbox"></i> 접수된 기업애로 &amp; 건의사항 (<span id="suggestionsCount">0</span>건)</h3>
+        </div>
+        <button class="modal-close" id="closeSuggestionsModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="suggest-intro" style="background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; margin-bottom: 14px;">
+          <p><i class="fa-solid fa-shield-halved"></i> 관리자 인증을 거쳐 안전하게 로드된 실시간 건의 데이터입니다. 외부 방문자에게는 일체 노출되지 않습니다.</p>
+        </div>
+        <div id="suggestionsListContainer" class="suggestions-list-container">
+          <!-- Injected dynamically via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeSuggestionsModalBtnBottom">닫기</button>
+      </div>
     </div>
   </div>
 
